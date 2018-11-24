@@ -81,9 +81,9 @@ def preprocess(image, plot=False, padding=True):
 #     img = preprocess(img)
 #     processed_images.append(img)
 
-def make_X_from_json(json_file, out):
-    with open(json_file, 'r', encoding='utf-8') as f:
-        files = json.load(f).keys()
+def make_X(file_list, out):
+    with open(file_list, 'r', encoding='utf-8') as f:
+        files = f.read().split('\n')
 
     X = np.zeros((len(files), img_w, img_h, 1), dtype=np.uint8)
     for i in range(len(files)):

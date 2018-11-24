@@ -93,12 +93,15 @@ def vectorize_string(string, index_table=alphabet_index):
 def encode_y(y, alphabet=alphabet):
     return [vectorize_string(s) for s in y]
 
-def make_y_from_json(json_file, out):
+def make_y_from(json_file, file_list, out):
     with open(json_file, encoding='utf-8') as f:
-        y = json.load(f).values()
-        y = encode_y(y)
-        y = pad_sequences(y, padding='post', value=blank_index)
-        np.save('y_real', y)
+        labels = json.load(f)
+    with open('file_list.txt', 'r') as f:
+        files = f.read().split('\n')
+    y = [labels[img] for img in files]
+    y = encode_y(y)
+    y = pad_sequences(y, padding='post', value=blank_index)
+    np.save(out, y)
 
 def ctc_decoder(pred):
     out_best = list(np.argmax(pred[0, 2:], axis=1))

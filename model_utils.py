@@ -30,16 +30,17 @@ down_height_factor = {
 class DataGenerator:
 
     def __init__(self, X_file, y_file, down_width_factor, batch_size=32, val_size=0.25):
-        X = np.load(X_file + '.npy', mmap_mode='r')
+        X = np.load(X_file + '.npy', mmap_mode=None)
         y = np.load(y_file + '.npy')
-        permu = list(range(len(y)))
-        random.shuffle(permu)
+        # permu = list(range(len(y)))
+        # random.shuffle(permu)
+        permu = np.load('permu.npy')
 
         # self.X_train, self.X_val, self.y_train, self.y_val = \
         # train_test_split(X, y, test_size=val_size, shuffle=True)
         split = int(len(permu) * val_size)
         train_idx = permu[:-split]
-        val_idx = permu[-split:-100]
+        val_idx = permu[-split:-2500]
         self.X_train = X[train_idx]
         self.X_val = X[val_idx]
         self.y_train = y[train_idx]

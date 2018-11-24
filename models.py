@@ -564,5 +564,6 @@ models = {
     'model_': model_,
 }
 
-model = model_()
+model_id = 'model7'
+model = models[model_id]()
 print(model.summary())

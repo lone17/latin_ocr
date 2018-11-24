@@ -1,0 +1,7 @@
+real/
+synthesis/
+__pycache__/
+*.json
+*.npy
+*.txt
+*.pickle

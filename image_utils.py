@@ -45,7 +45,18 @@ def resize(img, height, always=True):
         return cv2.resize(img, (int(rate * img.shape[1]), height))
     return img
 
-def preprocess(image, plot=False, padding=True):
+def pad(img, width, vertical=False):
+    if vertical:
+        img = cv2.copyMakeBorder(img, 0, width - img.shape[0], 0, 0,
+                                  cv2.BORDER_CONSTANT, value=0)
+        img = img[:,:,None]
+    else:
+        img = cv2.copyMakeBorder(img, 0, 0, 0, width - img.shape[1],
+                                  cv2.BORDER_CONSTANT, value=0)
+
+    return img
+
+def preprocess(image, padding=True, width=img_w, plot=False):
     image = resize(image, 100, always=True)
     if plot:
         plt.subplot(4, 1, 1)
@@ -66,9 +77,9 @@ def preprocess(image, plot=False, padding=True):
         implt(image4, t='processed')
         plt.show()
 
+    result = image4
     if padding:
-            result = cv2.copyMakeBorder(image4, 0, 0, 0, img_w - image4.shape[1],
-                                        cv2.BORDER_CONSTANT, value=0)
+            result = pad(image4, width)
 
     return result.swapaxes(0,1)[:,:,None]
 
@@ -81,12 +92,14 @@ def preprocess(image, plot=False, padding=True):
 #     img = preprocess(img)
 #     processed_images.append(img)
 
-def make_X(file_list, out):
-    with open(file_list, 'r', encoding='utf-8') as f:
+def make_X_from_images(images, file_list, out):
+    with open(images, 'rb') as f:
+        images = pickle.load(f)
+    with open(file_list, 'r') as f:
         files = f.read().split('\n')
 
     X = np.zeros((len(files), img_w, img_h, 1), dtype=np.uint8)
     for i in range(len(files)):
         print(files[i])
         X[i] = preprocess(images[i])
-        np.save('X_real', X)
+        np.save(out, X)

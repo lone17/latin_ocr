@@ -73,13 +73,33 @@ convert_table = {
 
 alphabet = latin + science + [unknown]
 
+alphabet = [
+    " ", "\"", "%", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", "=", "~",
+    "°", "→",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+    "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+    unknown
+]
+
+alphabet_index = {alphabet[i]: i for i in range(len(alphabet))}
+blank_index = len(alphabet)
+
+def reprocess(s):
+    s = re.sub(r'(\s|-|\.)\1+', r'\1', s)
+    s = s.replace('->', '→')
+    s = s.translate(str.maketrans(dict(zip('[{}];≒', '(()):='))))
+    pt = '[^' + ''.join(alphabet) + ']'
+    s = re.sub(pt, unknown, s)
+
+    return s
+
 for c in to_unknown:
     convert_table[c] = unknown
 for c in alphabet:
     convert_table[c] = c
-
-alphabet_index = {alphabet[i]: i for i in range(len(alphabet))}
-blank_index = len(alphabet)
 
 def normalize_label(s):
     result = []
@@ -130,24 +150,4 @@ def ctc_decoder(pred):
 #         print(e)
 #         os.startfile(os.path.normpath(data_dir + e))
 
-alphabet = [
-    " ", "\"", "%", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", "=", "~",
-    "°", "→",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
-    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
-    "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    unknown
-]
-
-def reprocess(s):
-    s = re.sub(r'(\s|-|\.)\1+', r'\1', s)
-    s = s.replace('->', '→')
-    s = s.translate(str.maketrans(dict(zip('[{}];≒', '(()):='))))
-    pt = '[^' + ''.join(alphabet) + ']'
-    s = re.sub(pt, unknown, s)
-
-    return s
-
-# make_y_from_transcripts('transcripts_real.txt', 'y_real_2')
+make_y_from_transcripts('transcripts_real.txt', 'y_real_2')
